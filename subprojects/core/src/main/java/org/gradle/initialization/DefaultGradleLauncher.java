@@ -125,12 +125,6 @@ public class DefaultGradleLauncher implements GradleLauncher {
                     doBuildStages(upTo);
                 } catch (Throwable t) {
                     failure = exceptionAnalyser.transform(t);
-                } finally {
-                    // TODO: Build operations for these composite related things?
-                    if (!isNestedBuild()) {
-                        IncludedBuildControllers buildControllers = gradle.getServices().get(IncludedBuildControllers.class);
-                        buildControllers.stopTaskExecution();
-                    }
                 }
                 buildResult.set(new BuildResult(upTo.name(), gradle, failure));
                 buildListener.buildFinished(buildResult.get());
@@ -207,7 +201,14 @@ public class DefaultGradleLauncher implements GradleLauncher {
             buildControllers.startTaskExecution();
         }
 
-        buildOperationExecutor.run(new ExecuteTasks());
+        try {
+            buildOperationExecutor.run(new ExecuteTasks());
+        } finally {
+            if (!isNestedBuild()) {
+                IncludedBuildControllers buildControllers = gradle.getServices().get(IncludedBuildControllers.class);
+                buildControllers.stopTaskExecution();
+            }
+        }
     }
 
     /**
