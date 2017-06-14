@@ -26,7 +26,23 @@ import org.gradle.internal.concurrent.Stoppable;
 public interface GradleLauncher extends Stoppable {
 
     GradleInternal getGradle();
-    SettingsInternal getSettings();
+
+    /**
+     * Evaluates the settings for this build.
+     *
+     * @return The loaded settings instance.
+     * @throws ReportedException On build failure. The failure will have been logged.
+     */
+    SettingsInternal getLoadedSettings();
+
+    /**
+     * Configures the build.
+     * This is different from {@link #getBuildAnalysis()} in that the `buildStarted` and `buildFinished` events will not be fired.
+     *
+     * @return The configured Gradle build instance.
+     * @throws ReportedException On build failure. The failure will have been logged.
+     */
+    GradleInternal getConfiguredBuild();
 
     /**
      * <p>Executes the build for this {@code GradleLauncher} instance and returns the result.</p>
@@ -35,14 +51,6 @@ public interface GradleLauncher extends Stoppable {
      * @throws ReportedException On build failure. The failure will have been logged.
      */
     BuildResult run() throws ReportedException;
-
-    /**
-     * Evaluates the settings for this build. The information about available tasks and projects is accessible via the {@link org.gradle.api.invocation.Gradle#getRootProject()} object.
-     *
-     * @return The result. Never returns null.
-     * @throws ReportedException On build failure. The failure will have been logged.
-     */
-    BuildResult load() throws ReportedException;
 
     /**
      * Evaluates the settings and all the projects. The information about available tasks and projects is accessible via the {@link org.gradle.api.invocation.Gradle#getRootProject()} object.
