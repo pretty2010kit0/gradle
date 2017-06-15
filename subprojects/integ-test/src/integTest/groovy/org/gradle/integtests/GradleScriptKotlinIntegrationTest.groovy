@@ -75,8 +75,8 @@ task("dumpKotlinBuildScriptModelClassPath") {
         val builderRegistry = (project as ProjectInternal).services[ToolingModelBuilderRegistry::class.java]
         val builder = builderRegistry.getBuilder(modelName)
         val model = builder.buildAll(modelName, project) as KotlinBuildScriptModel
-        if (model.classPath.any { it.name.startsWith("gradle-script-kotlin") }) {
-            println("gradle-script-kotlin!")
+        if (model.classPath.any { it.name.startsWith("gradle-kotlin-dsl") }) {
+            println("gradle-kotlin-dsl!")
         }
     }
 }
@@ -86,6 +86,6 @@ task("dumpKotlinBuildScriptModelClassPath") {
         run 'dumpKotlinBuildScriptModelClassPath'
 
         then:
-        result.output.contains("gradle-script-kotlin!")
+        result.output.contains("gradle-kotlin-dsl!")
     }
 }
